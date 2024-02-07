@@ -25,3 +25,8 @@ enum Role{
   MANAGER
   ADMIN
 }
+
+model TokenBlacklist{
+  id Int @id @default(autoincrement())
+  token String 
+}

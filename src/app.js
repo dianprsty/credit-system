@@ -15,4 +15,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 
+app.use((err, req, res, next) => {
+  res.status(err.statusCode || 500).json({
+    success: false,
+    status: err.statusCode || 500,
+    messages: err.message,
+  });
+});
+
 module.exports = app;

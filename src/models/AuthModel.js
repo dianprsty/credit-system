@@ -3,7 +3,7 @@ const prisma = require("../db/prisma");
 class AuthModel {
   //
   static async create(id, username, role, password) {
-    await prisma.user.create({
+    return await prisma.user.create({
       data: {
         id: id,
         username: username,
@@ -23,6 +23,27 @@ class AuthModel {
         username: username,
       },
     });
+  }
+
+  static async insertToken(token) {
+    let query = `INSER INTO TokenBlacklist VALUES(${token})`;
+    //
+    await prisma.tokenBlacklist.create({
+      data: {
+        token: token,
+      },
+    });
+  }
+
+  static async isTokenBlackListed(token) {
+    let data = await prisma.tokenBlacklist.findFirst({
+      where: {
+        token: token,
+      },
+    });
+    console.log(data);
+
+    return !!data;
   }
 }
 
