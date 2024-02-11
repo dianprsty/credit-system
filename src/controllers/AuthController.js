@@ -9,17 +9,24 @@ dotenv.config();
 class AuthController {
   static async create(req, res, next) {
     //
-    let { username, role, password } = req.body;
+    let { username, name, role, password } = req.body;
     password = await bcript.hash(password, 10);
     role = role.toUpperCase();
     const id = ulid();
     try {
-      let user = await AuthModel.create(id, username, role, password);
+      let user = await AuthModel.create(id, username, name, role, password);
       res.status(201).json({
         message: "created",
         status: 201,
         data: {
-          username: user,
+          username: {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+          },
         },
       });
     } catch (error) {
@@ -81,7 +88,7 @@ class AuthController {
           { sub: { id: user.id, username: user.username } },
           process.env.JWT_SECRET,
           {
-            expiresIn: 6000,
+            expiresIn: "2d",
           }
         );
         res.status(200).json({

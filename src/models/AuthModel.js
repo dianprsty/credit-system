@@ -2,11 +2,12 @@ const prisma = require("../db/prisma");
 
 class AuthModel {
   //
-  static async create(id, username, role, password) {
+  static async create(id, username, name, role, password) {
     return await prisma.user.create({
       data: {
         id: id,
         username: username,
+        name: name,
         role: role,
         password: password,
       },

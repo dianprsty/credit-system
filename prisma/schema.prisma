@@ -14,8 +14,12 @@ datasource db {
 model User{
   id String @id @unique
   username String @unique
+  name String
   role Role @default(MARKETING)
   password String
+
+  loans Loan[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -29,4 +33,97 @@ enum Role{
 model TokenBlacklist{
   id Int @id @default(autoincrement())
   token String 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
+
+model LoanImages {
+  id Int @id @default(autoincrement())
+  imageKtp String
+  imageSpk String
+  imagePayment String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Customer{
+  id String @id @unique
+  name String
+  nik String @unique
+  birthDate DateTime
+  maritalStatus String
+  partnerName String
+  partnerNik String
+
+  loans Loan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Vehicle{
+  id String @id @unique
+  dealer String
+  brand String
+  model String
+  type String
+  color String
+  price Decimal
+
+  loans Loan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+}
+
+model LoanStatus{
+  id Int @id @default(autoincrement())
+  status String
+
+  loans Loan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Loan{
+  id String @id @unique
+  insurance Decimal
+  downPayment Decimal
+  duration Int
+  interest Decimal
+  installments Decimal
+
+  pdf LoanPdfSigned?
+
+  userId String
+  user User @relation(fields: [userId], references: [id]) 
+
+  customerId String
+  customer Customer @relation(fields: [customerId], references: [id]) 
+
+  vehicleId String
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  loanStatusId Int
+  loanStatus LoanStatus @relation(fields: [loanStatusId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())  
+
+}
+
+model LoanPdfSigned{
+  id Int @id @default(autoincrement())
+  pdf String
+
+  loan Loan @relation(fields: [loanId], references: [id])
+  loanId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
