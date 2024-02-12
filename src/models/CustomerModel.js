@@ -11,8 +11,6 @@ class CustomerModel {
   }
 
   static async show(id) {
-    // return await prisma.customer.findMany();
-
     try {
       return await prisma.customer.findUnique({
         where: {

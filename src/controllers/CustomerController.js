@@ -1,6 +1,5 @@
 const { ulid } = require("ulid");
 const CustomerModel = require("../models/CustomerModel");
-const { customer } = require("../db/prisma");
 
 class CustomerController {
   static async create(req, res, next) {
