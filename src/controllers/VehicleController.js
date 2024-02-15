@@ -52,6 +52,7 @@ class VehicleController {
       const id = req.params.id;
       let vehicle = req.body;
       vehicle.id = id;
+      vehicle.updatedAt = new Date();
       const result = await VehicleModel.update(vehicle);
       res.status(200).json({
         success: true,

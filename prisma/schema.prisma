@@ -39,10 +39,12 @@ model TokenBlacklist{
 }
 
 model LoanImages {
-  id Int @id @default(autoincrement())
+  id Int @id @default(autoincrement()) 
   imageKtp String
   imageSpk String
   imagePayment String
+
+  loan Loan?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -97,7 +99,7 @@ model Loan{
   interest Decimal
   installments Decimal
 
-  pdf LoanPdfSigned?
+  pdf LoanPdfSigned[]
 
   userId String
   user User @relation(fields: [userId], references: [id]) 
@@ -111,6 +113,9 @@ model Loan{
   loanStatusId Int
   loanStatus LoanStatus @relation(fields: [loanStatusId], references: [id])
 
+  loanImagesId Int @unique
+  loanImages LoanImages @relation(fields: [loanImagesId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())  
 
@@ -121,7 +126,7 @@ model LoanPdfSigned{
   pdf String
 
   loan Loan @relation(fields: [loanId], references: [id])
-  loanId String @unique
+  loanId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

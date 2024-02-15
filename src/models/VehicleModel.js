@@ -11,16 +11,11 @@ class VehicleModel {
   }
 
   static async show(id) {
-    try {
-      return await prisma.vehicle.findUnique({
-        where: {
-          id: id,
-        },
-      });
-      return data;
-    } catch (error) {
-      return error;
-    }
+    return await prisma.vehicle.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 
   static async update(vehicle) {

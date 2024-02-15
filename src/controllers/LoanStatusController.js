@@ -1,17 +1,12 @@
 const { ulid } = require("ulid");
-const CustomerModel = require("../models/CustomerModel");
+const LoanStatusModel = require("../models/LoanStatusModel");
 
-class CustomerController {
+class LoanStatusController {
   static async create(req, res, next) {
     try {
-      let customer = req.body;
-      const id = ulid();
-      customer.birthDate = new Date(customer.birthDate);
-      customer = { id, ...customer };
-      console.log(customer);
-      console.log(customer.birthDate);
+      let status = req.body;
 
-      const result = await CustomerModel.create(customer);
+      const result = await LoanStatusModel.create(status);
 
       res.status(201).json({
         success: true,
@@ -25,11 +20,11 @@ class CustomerController {
 
   static async index(req, res, next) {
     try {
-      const customers = await CustomerModel.index();
+      const statuses = await LoanStatusModel.index();
       res.status(200).json({
         success: true,
         status: 200,
-        data: customers,
+        data: statuses,
       });
     } catch (error) {
       next(error);
@@ -38,12 +33,12 @@ class CustomerController {
 
   static async show(req, res, next) {
     try {
-      const id = req.params.id;
-      const customer = await CustomerModel.show(id);
+      const id = Number(req.params.id);
+      const status = await LoanStatusModel.show(id);
       res.status(200).json({
         success: true,
         status: 200,
-        data: customer,
+        data: status,
       });
     } catch (error) {
       next(error);
@@ -52,11 +47,11 @@ class CustomerController {
 
   static async update(req, res, next) {
     try {
-      const id = req.params.id;
-      let customer = req.body;
-      customer.id = id;
-      customer.updatedAt = new Date();
-      const result = await CustomerModel.update(customer);
+      const id = Number(req.params.id);
+      let status = req.body;
+      status.id = id;
+      status.updatedAt = new Date();
+      const result = await LoanStatusModel.update(status);
       res.status(200).json({
         success: true,
         status: 200,
@@ -69,13 +64,13 @@ class CustomerController {
 
   static async delete(req, res, next) {
     try {
-      const id = req.params.id;
+      const id = Number(req.params.id);
       console.log("controller", id);
-      const customer = await CustomerModel.delete(id);
+      const status = await LoanStatusModel.delete(id);
       res.status(200).json({
         success: true,
         status: 200,
-        data: customer,
+        data: status,
       });
     } catch (error) {
       next(error);
@@ -83,4 +78,4 @@ class CustomerController {
   }
 }
 
-module.exports = CustomerController;
+module.exports = LoanStatusController;
