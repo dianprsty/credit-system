@@ -12,4 +12,25 @@ router.post(
   LoanController.store
 );
 
+router.get("/loans", AuthMiddleware.validateToken, LoanController.index);
+router.get("/loans/:id", AuthMiddleware.validateToken, LoanController.show);
+router.post(
+  "/loans/approval",
+  AuthMiddleware.validateToken,
+  AuthMiddleware.verifyManager,
+  LoanController.approval
+);
+router.get(
+  "/loans/pdf/:id",
+  AuthMiddleware.validateToken,
+  AuthMiddleware.verifyAdmin,
+  LoanController.generatePdf
+);
+router.post(
+  "/loans/upload-pdf",
+  AuthMiddleware.validateToken,
+  FileMiddleware.getFiles,
+  LoanController.uploadPdf
+);
+
 module.exports = router;
