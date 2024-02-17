@@ -5,6 +5,10 @@ class LoanModel {
     return await prisma.loanImages.create({ data: images });
   }
 
+  static async uploadPdf(pdf) {
+    return await prisma.loanPdfSigned.create({ data: pdf });
+  }
+
   static async create(loan) {
     return await prisma.loan.create({ data: loan });
   }
@@ -15,6 +19,8 @@ class LoanModel {
       include: {
         customer: true,
         vehicle: true,
+        loanImages: true,
+        loanStatus: true,
         user: {
           select: {
             id: true,
@@ -33,6 +39,8 @@ class LoanModel {
       include: {
         customer: true,
         vehicle: true,
+        loanImages: true,
+        loanStatus: true,
         user: {
           select: {
             id: true,
@@ -51,6 +59,17 @@ class LoanModel {
       },
       data: {
         loanStatusId: isApproved ? 3 : 2,
+      },
+    });
+  }
+
+  static async updateStatus(id, status) {
+    return await prisma.loan.update({
+      where: {
+        id: id,
+      },
+      data: {
+        loanStatusId: status,
       },
     });
   }

@@ -46,7 +46,9 @@ class LoanController {
         if (image.mimetype.includes("image")) {
           let imagePath = `images/loans/${id}/${image.fieldname}_${image.originalname}`;
           fs.writeFileSync(`public/${imagePath}`, image.buffer);
-          images[image.fieldname] = imagePath;
+          images[image.fieldname] = `${req.protocol}://${req.get(
+            "host"
+          )}/static/${imagePath}`;
         }
       }
 
@@ -141,6 +143,14 @@ class LoanController {
       const id = req.params.id;
       const loanData = await LoanModel.show(id);
 
+      if ([1, 2].includes(loanData.loanStatusId)) {
+        throw Error("loan is either rejected or not approved yet");
+      }
+
+      if (loanData.loanStatusId == 3) {
+        await LoanModel.updateStatus(id, 4);
+      }
+
       loanData.date = new Date().toLocaleString("id-ID");
       loanData.baseUrl = `${req.protocol}://${req.get("host")}`;
       loanData.totalInsurance = loanData.vehicle.price
@@ -173,14 +183,51 @@ class LoanController {
   static async uploadPdf(req, res, next) {
     try {
       const pdf = req.files[0];
-      console.log(pdf);
+      const { loanId } = req.body;
+
+      const loan = LoanModel.show(loanId);
+      if (!loan) throw Error("loan doesn't exist");
 
       if (!pdf.mimetype.includes("pdf")) throw Error("file should be pdf");
+
+      if (!fs.existsSync(`public/files/loans/${loanId}`)) {
+        fs.mkdirSync(`public/files/loans/${loanId}`);
+      }
+
+      let filePath = `files/loans/${loanId}/${pdf.fieldname}_${pdf.originalname}`;
+      fs.writeFileSync(`public/${filePath}`, pdf.buffer);
+      const fileUrl = `${req.protocol}://${req.get("host")}/static/${filePath}`;
+
+      const result = await LoanModel.uploadPdf({ pdf: fileUrl, loanId });
+
+      await LoanModel.updateStatus(loanId, 5);
 
       res.status(200).json({
         success: true,
         status: 200,
-        data: pdf,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async cashout(req, res, next) {
+    try {
+      const { loanId } = req.body;
+
+      const loan = await LoanModel.show(loanId);
+      if (!loan) throw Error("loan doesn't exist");
+      console.log(loan);
+
+      if (loan.loanStatusId != 5) throw Error("loan is not ready to cashout");
+
+      const result = await LoanModel.updateStatus(loanId, 6);
+
+      res.status(200).json({
+        success: true,
+        status: 200,
+        data: result,
       });
     } catch (error) {
       next(error);

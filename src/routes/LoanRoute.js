@@ -22,8 +22,8 @@ router.post(
 );
 router.get(
   "/loans/pdf/:id",
-  AuthMiddleware.validateToken,
-  AuthMiddleware.verifyAdmin,
+  // AuthMiddleware.validateToken,
+  // AuthMiddleware.verifyAdmin,
   LoanController.generatePdf
 );
 router.post(
@@ -31,6 +31,12 @@ router.post(
   AuthMiddleware.validateToken,
   FileMiddleware.getFiles,
   LoanController.uploadPdf
+);
+router.post(
+  "/loans/cashout",
+  AuthMiddleware.validateToken,
+  AuthMiddleware.verifyAdmin,
+  LoanController.cashout
 );
 
 module.exports = router;
